@@ -230,7 +230,7 @@ footer a { color: #c99a45; text-decoration: none; }
     <a href="index.html" class="header-logo">酒井千絵研究室</a>
     <ul class="header-nav">
       <li><a href="index.html">ホーム</a></li>
-      <li><a href="column.html" class="active">読み物</a></li>
+      <li><a href="column.html" class="active">コラム</a></li>
       <li><a href="teaching.html">授業</a></li>
       <li><a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank">公式サイト ↗</a></li>
     </ul>
@@ -238,7 +238,7 @@ footer a { color: #c99a45; text-decoration: none; }
   </div>
   <div class="mobile-menu" id="mobile-menu">
     <a href="index.html" onclick="closeMenu()">ホーム</a>
-    <a href="column.html" onclick="closeMenu()">読み物</a>
+    <a href="column.html" onclick="closeMenu()"></a>
     <a href="teaching.html" onclick="closeMenu()">授業</a>
     <a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank">公式サイト ↗</a>
   </div>
@@ -261,13 +261,16 @@ footer a { color: #c99a45; text-decoration: none; }
         <button class="tag-btn sem" onclick="filter('専門演習',this)">専門演習 <span class="tag-count" id="c-専門演習">0</span></button>
         <button class="tag-btn sem" onclick="filter('卒業研究',this)">卒業研究 <span class="tag-count" id="c-卒業研究">0</span></button>
         <button class="tag-btn lec" onclick="filter('国際社会学1',this)">国際社会学1 <span class="tag-count" id="c-国際社会学1">0</span></button>
-        <button class="tag-btn lec" onclick="filter('国際社会学1',this)">国際社会学2 <span class="tag-count" id="c-国際社会学2">0</span></button>
+        <button class="tag-btn lec" onclick="filter('国際社会学2',this)">国際社会学2 <span class="tag-count" id="c-国際社会学2">0</span></button>
         <button class="tag-btn lec" onclick="filter('基礎研究1',this)">基礎研究1 <span class="tag-count" id="c-基礎研究1">0</span></button>
+        <button class="tag-btn lec" onclick="filter('基礎社会学2',this)">基礎社会学2 <span class="tag-count" id="c-基礎社会学2">0</span></button>
       </div>
+      <div class="tag-group"></div>
       <span class="tag-group-label">授業補足　-　大学院</span>
         
-        <button class="tag-btn sem" onclick="filter('演習等',this)">演習等 <span class="tag-count" id="c-専門演習1">0</span></button>
-        <button class="tag-btn sem" onclick="filter('M国際社会学研究',this)">M国際社会学研究 <span class="tag-count" id="c-卒業研究1">0</span></button>
+        <button class="tag-btn sem" onclick="filter('演習等',this)">演習等 <span class="tag-count" id="c-演習等">0</span></button>
+        <button class="tag-btn sem" onclick="filter('M国際社会学研究',this)">M国際社会学研究 <span class="tag-count" id="c-M国際社会学研究">0</span></button>
+      </div>
 
       <div class="tag-group">
         <span class="tag-group-label">研究・コラム</span>
@@ -315,17 +318,18 @@ footer a { color: #c99a45; text-decoration: none; }
 <script>
 // ===== タグ設定 =====
 const TAG_TYPE = {
-  '国際社会学1':'lec', '基礎研究1':'lec',
-  '専門演習1':'sem',  '卒業研究1':'sem',
-  '研究コラム':'res', '移民と博物館':'res', '学会':'res',
-  '授業補足':'note',
+  '国際社会学1':'lec', '国際社会学2':'lec', '基礎研究1':'lec','基礎社会学2':'lec',
+  '専門演習':'sem', '卒業研究':'sem',
+  '演習等':'sem', 'M国際社会学研究':'sem',
+  '研究コラム':'res', '最近読んだ本':'res', '学会・調査':'res',
+  '授業補足':'note', '業務連絡':'note',
 };
 function tt(tag) { return TAG_TYPE[tag] || 'note'; }
 
 function cardClass(tags) {
-  if (tags.some(t => ['専門演習1','卒業研究1'].includes(t))) return 'sem-card';
-  if (tags.some(t => ['国際社会学1','基礎研究1','授業補足'].includes(t))) return 'lec-card';
-  if (tags.some(t => ['研究コラム','移民と博物館','学会'].includes(t))) return 'res-card';
+  if (tags.some(t => ['専門演習','卒業研究','演習等','M国際社会学研究'].includes(t))) return 'sem-card';
+  if (tags.some(t => ['国際社会学1','国際社会学2','基礎研究1','授業補足','基礎社会学2'].includes(t))) return 'lec-card';
+  if (tags.some(t => ['研究コラム','最近読んだ本','学会・調査'].includes(t))) return 'res-card';
   return '';
 }
 
@@ -369,8 +373,10 @@ async function load() {
 
 // ===== 件数バッジ更新 =====
 function updateCounts() {
-  const tags = ['all','国際社会学1','基礎研究1','専門演習1','卒業研究1',
-                '研究コラム','移民と博物館','学会','授業補足'];
+  const tags = ['all',''国際社会学1','国際社会学2','基礎研究1','基礎社会学2',
+                '専門演習','卒業研究','演習等','M国際社会学研究',
+                '研究コラム','最近読んだ本','学会・調査',
+                '授業補足','業務連絡'];
   tags.forEach(tag => {
     const el = document.getElementById('c-' + tag);
     if (!el) return;
