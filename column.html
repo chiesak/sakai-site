@@ -34,7 +34,6 @@ header {
 }
 .header-nav a:hover { color: #fff; background: rgba(255,255,255,0.1); }
 .header-nav a.active { color: #c99a45; }
-
 .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; margin-left: auto; }
 .hamburger span { display: block; width: 20px; height: 2px; background: #fff; border-radius: 1px; }
 .mobile-menu {
@@ -62,11 +61,8 @@ header {
   margin-bottom: 10px; padding-bottom: 8px;
   border-bottom: 1px solid #f1f3f5;
 }
-
-/* タグボタン */
 .tag-group { margin-bottom: 10px; }
 .tag-group-label { font-size: 0.6rem; color: #adb5bd; margin-bottom: 5px; display: block; letter-spacing: 0.08em; }
-
 .tag-btn {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 3px 9px; border-radius: 20px; margin: 2px 2px 2px 0;
@@ -74,21 +70,17 @@ header {
   transition: all 0.15s; background: transparent;
   font-family: 'Noto Sans JP', sans-serif;
 }
-.tag-btn.all   { border-color: #495057; color: #495057; }
-.tag-btn.lec   { border-color: #1864ab; color: #1864ab; }
-.tag-btn.sem   { border-color: #087f5b; color: #087f5b; }
-.tag-btn.res   { border-color: #6741d9; color: #6741d9; }
-.tag-btn.note  { border-color: #855a00; color: #855a00; }
-
-.tag-btn.active, .tag-btn:hover {
-  color: #fff !important;
-}
+.tag-btn.all  { border-color: #495057; color: #495057; }
+.tag-btn.lec  { border-color: #1864ab; color: #1864ab; }
+.tag-btn.sem  { border-color: #087f5b; color: #087f5b; }
+.tag-btn.res  { border-color: #6741d9; color: #6741d9; }
+.tag-btn.note { border-color: #855a00; color: #855a00; }
+.tag-btn.active, .tag-btn:hover { color: #fff !important; }
 .tag-btn.all.active,  .tag-btn.all:hover  { background: #495057; border-color: #495057; }
 .tag-btn.lec.active,  .tag-btn.lec:hover  { background: #1864ab; border-color: #1864ab; }
 .tag-btn.sem.active,  .tag-btn.sem:hover  { background: #087f5b; border-color: #087f5b; }
 .tag-btn.res.active,  .tag-btn.res:hover  { background: #6741d9; border-color: #6741d9; }
 .tag-btn.note.active, .tag-btn.note:hover { background: #855a00; border-color: #855a00; }
-
 .tag-count { font-size: 0.6rem; background: rgba(0,0,0,0.1); border-radius: 10px; padding: 0 5px; }
 
 /* ===== 記事エリア ===== */
@@ -102,20 +94,16 @@ header {
   background: #e9ecef; padding: 2px 8px; border-radius: 3px;
   font-size: 0.68rem; color: #495057;
 }
-
-/* 記事カード */
 .article-card {
   background: #fff; border: 1px solid #dee2e6; border-radius: 8px;
   margin-bottom: 12px; overflow: hidden;
   border-left: 4px solid #dee2e6;
-  transition: box-shadow 0.15s, transform 0.15s;
-  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s; cursor: pointer;
 }
 .article-card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.08); transform: translateY(-1px); }
-.article-card.lec-card  { border-left-color: #1864ab; }
-.article-card.sem-card  { border-left-color: #087f5b; }
-.article-card.res-card  { border-left-color: #6741d9; }
-
+.article-card.lec-card { border-left-color: #1864ab; }
+.article-card.sem-card { border-left-color: #087f5b; }
+.article-card.res-card { border-left-color: #6741d9; }
 .card-inner { padding: 18px 20px; }
 .card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
 .card-date { font-size: 0.7rem; color: #868e96; font-family: 'Source Sans 3', monospace; }
@@ -127,7 +115,6 @@ header {
 .ct-sem  { background: #c3fae8; color: #087f5b; }
 .ct-res  { background: #e5dbff; color: #6741d9; }
 .ct-note { background: #fff3bf; color: #855a00; }
-
 .card-title {
   font-family: 'Noto Serif JP', serif;
   font-size: 1rem; color: #1e3a5f; line-height: 1.5; margin-bottom: 8px;
@@ -138,24 +125,21 @@ header {
 }
 .card-footer {
   padding: 10px 20px; background: #f8f9fa;
-  border-top: 1px solid #f1f3f5;
-  display: flex; justify-content: flex-end;
+  border-top: 1px solid #f1f3f5; display: flex; justify-content: flex-end;
 }
 .read-btn {
   font-size: 0.73rem; color: #1e3a5f; font-weight: 500;
   background: none; border: none; cursor: pointer;
-  font-family: 'Noto Sans JP', sans-serif;
-  padding: 0; transition: color 0.15s;
+  font-family: 'Noto Sans JP', sans-serif; padding: 0; transition: color 0.15s;
 }
 .read-btn:hover { color: #b07d2a; }
-
 .empty-msg {
   text-align: center; padding: 48px 20px; color: #868e96;
   background: #fff; border: 1px solid #dee2e6; border-radius: 8px;
   font-size: 0.84rem; line-height: 2.2;
 }
 
-/* ===== 記事モーダル ===== */
+/* ===== モーダル ===== */
 .overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.45); z-index: 300;
@@ -168,35 +152,20 @@ header {
   animation: slideUp 0.22s ease;
 }
 @keyframes slideUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
-
-.modal-head {
-  padding: 24px 28px 16px;
-  border-bottom: 1px solid #f1f3f5;
-}
+.modal-head { padding: 24px 28px 16px; border-bottom: 1px solid #f1f3f5; }
 .modal-meta { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
 .modal-date { font-size: 0.72rem; color: #868e96; font-family: 'Source Sans 3', monospace; }
-.modal-title {
-  font-family: 'Noto Serif JP', serif;
-  font-size: 1.2rem; color: #1e3a5f; line-height: 1.5;
-}
-
-/* 本文レンダリング */
-.modal-body {
-  padding: 20px 28px 28px;
-  font-size: 0.88rem; line-height: 2; color: #333;
-}
+.modal-title { font-family: 'Noto Serif JP', serif; font-size: 1.2rem; color: #1e3a5f; line-height: 1.5; }
+.modal-body { padding: 20px 28px 28px; font-size: 0.88rem; line-height: 2; color: #333; }
 .modal-body p { margin-bottom: 1em; }
 .modal-body p:last-child { margin-bottom: 0; }
 .modal-body h3 {
-  font-family: 'Noto Serif JP', serif;
-  font-size: 0.95rem; color: #1e3a5f;
-  margin: 1.4em 0 0.5em; padding-left: 10px;
-  border-left: 3px solid #b07d2a;
+  font-family: 'Noto Serif JP', serif; font-size: 0.95rem; color: #1e3a5f;
+  margin: 1.4em 0 0.5em; padding-left: 10px; border-left: 3px solid #b07d2a;
 }
 .modal-body strong { font-weight: 700; }
 .modal-body em { font-style: italic; color: #495057; }
 .modal-body a { color: #1864ab; }
-
 .modal-close {
   display: block; width: 100%; padding: 13px;
   background: #f8f9fa; border: none; border-top: 1px solid #dee2e6;
@@ -209,8 +178,7 @@ header {
 /* ===== フッター ===== */
 footer {
   background: #1e3a5f; color: rgba(255,255,255,0.5);
-  padding: 24px; text-align: center;
-  font-size: 0.72rem; line-height: 2;
+  padding: 24px; text-align: center; font-size: 0.72rem; line-height: 2;
 }
 footer a { color: #c99a45; text-decoration: none; }
 
@@ -238,7 +206,7 @@ footer a { color: #c99a45; text-decoration: none; }
   </div>
   <div class="mobile-menu" id="mobile-menu">
     <a href="index.html" onclick="closeMenu()">ホーム</a>
-    <a href="column.html" onclick="closeMenu()"></a>
+    <a href="column.html" onclick="closeMenu()">コラム</a>
     <a href="teaching.html" onclick="closeMenu()">授業</a>
     <a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank">公式サイト ↗</a>
   </div>
@@ -256,8 +224,7 @@ footer a { color: #c99a45; text-decoration: none; }
         </button>
       </div>
       <div class="tag-group">
-        <span class="tag-group-label">授業補足　-　学部</span>
-        
+        <span class="tag-group-label">授業補足 — 学部</span>
         <button class="tag-btn sem" onclick="filter('専門演習',this)">専門演習 <span class="tag-count" id="c-専門演習">0</span></button>
         <button class="tag-btn sem" onclick="filter('卒業研究',this)">卒業研究 <span class="tag-count" id="c-卒業研究">0</span></button>
         <button class="tag-btn lec" onclick="filter('国際社会学1',this)">国際社会学1 <span class="tag-count" id="c-国際社会学1">0</span></button>
@@ -265,9 +232,8 @@ footer a { color: #c99a45; text-decoration: none; }
         <button class="tag-btn lec" onclick="filter('基礎研究1',this)">基礎研究1 <span class="tag-count" id="c-基礎研究1">0</span></button>
         <button class="tag-btn lec" onclick="filter('基礎社会学2',this)">基礎社会学2 <span class="tag-count" id="c-基礎社会学2">0</span></button>
       </div>
-      <div class="tag-group"></div>
-      <span class="tag-group-label">授業補足　-　大学院</span>
-        
+      <div class="tag-group">
+        <span class="tag-group-label">授業補足 — 大学院</span>
         <button class="tag-btn sem" onclick="filter('演習等',this)">演習等 <span class="tag-count" id="c-演習等">0</span></button>
         <button class="tag-btn sem" onclick="filter('M国際社会学研究',this)">M国際社会学研究 <span class="tag-count" id="c-M国際社会学研究">0</span></button>
       </div>
@@ -290,7 +256,7 @@ footer a { color: #c99a45; text-decoration: none; }
   </aside>
 
   <!-- 記事エリア -->
-  <main>
+  <main class="articles-area">
     <div class="result-bar" id="result-bar">読み込み中...</div>
     <div id="article-list"></div>
   </main>
@@ -315,36 +281,30 @@ footer a { color: #c99a45; text-decoration: none; }
 </footer>
 
 <script>
-// ===== タグ設定 =====
 const TAG_TYPE = {
-  '国際社会学1':'lec', '国際社会学2':'lec', '基礎研究1':'lec','基礎社会学2':'lec',
-  '専門演習':'sem', '卒業研究':'sem',
-  '演習等':'sem', 'M国際社会学研究':'sem',
+  '国際社会学1':'lec', '国際社会学2':'lec',
+  '基礎研究1':'lec',  '基礎社会学2':'lec',
+  '専門演習':'sem',   '卒業研究':'sem',
+  '演習等':'sem',     'M国際社会学研究':'sem',
   '研究コラム':'res', '最近読んだ本':'res', '学会・調査':'res',
-  '授業補足':'note', '業務連絡':'note',
+  '授業補足':'note',  '業務連絡':'note',
 };
 function tt(tag) { return TAG_TYPE[tag] || 'note'; }
 
 function cardClass(tags) {
   if (tags.some(t => ['専門演習','卒業研究','演習等','M国際社会学研究'].includes(t))) return 'sem-card';
-  if (tags.some(t => ['国際社会学1','国際社会学2','基礎研究1','授業補足','基礎社会学2'].includes(t))) return 'lec-card';
+  if (tags.some(t => ['国際社会学1','国際社会学2','基礎研究1','基礎社会学2','授業補足'].includes(t))) return 'lec-card';
   if (tags.some(t => ['研究コラム','最近読んだ本','学会・調査'].includes(t))) return 'res-card';
   return '';
 }
 
-// ===== 本文をHTMLに変換 =====
-// ・空行 → 段落区切り
-// ・### 見出し → <h3>
-// ・**太字** → <strong>
 function renderBody(text) {
   return text
     .split(/\n\n+/)
     .map(para => {
       para = para.trim();
       if (!para) return '';
-      if (para.startsWith('### ')) {
-        return `<h3>${para.slice(4)}</h3>`;
-      }
+      if (para.startsWith('### ')) return `<h3>${para.slice(4)}</h3>`;
       const line = para
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n/g, '<br>');
@@ -353,9 +313,7 @@ function renderBody(text) {
     .join('');
 }
 
-// ===== データ読み込み =====
 let articles = [];
-let currentTag = 'all';
 
 async function load() {
   try {
@@ -370,12 +328,13 @@ async function load() {
   }
 }
 
-// ===== 件数バッジ更新 =====
 function updateCounts() {
-  const tags = ['all',''国際社会学1','国際社会学2','基礎研究1','基礎社会学2',
-                '専門演習','卒業研究','演習等','M国際社会学研究',
-                '研究コラム','最近読んだ本','学会・調査',
-                '授業補足','業務連絡'];
+  const tags = ['all',
+    '専門演習','卒業研究','国際社会学1','国際社会学2','基礎研究1','基礎社会学2',
+    '演習等','M国際社会学研究',
+    '研究コラム','最近読んだ本','学会・調査',
+    '授業補足','業務連絡'
+  ];
   tags.forEach(tag => {
     const el = document.getElementById('c-' + tag);
     if (!el) return;
@@ -385,33 +344,26 @@ function updateCounts() {
   });
 }
 
-// ===== 絞り込み =====
 function filter(tag, btn) {
-  currentTag = tag;
   document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   render(tag);
-  // URLパラメータ更新（ブラウザ履歴には残さない）
   const url = new URL(window.location);
   tag === 'all' ? url.searchParams.delete('tag') : url.searchParams.set('tag', tag);
   history.replaceState(null, '', url);
 }
 
-// ===== レンダリング =====
 function render(tag) {
   const list = tag === 'all' ? articles : articles.filter(a => a.tags.includes(tag));
   const bar = document.getElementById('result-bar');
   const container = document.getElementById('article-list');
-
   bar.innerHTML = tag === 'all'
     ? `全 <strong>${list.length}</strong> 件`
     : `<span class="result-tag-badge">#${tag}</span> <strong>${list.length}</strong> 件`;
-
   if (list.length === 0) {
     container.innerHTML = `<div class="empty-msg">このタグの記事はまだありません。</div>`;
     return;
   }
-
   container.innerHTML = list.map(a => {
     const tagsHTML = a.tags.map(t =>
       `<span class="card-tag ct-${tt(t)}">${t}</span>`
@@ -434,7 +386,6 @@ function render(tag) {
   }).join('');
 }
 
-// ===== モーダル =====
 function openModal(id) {
   const a = articles.find(x => x.id === id);
   if (!a) return;
@@ -457,7 +408,6 @@ function closeIfBg(e) {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ===== URL パラメータ初期化 =====
 function initFromURL() {
   const tag = new URLSearchParams(window.location.search).get('tag');
   if (tag) {
@@ -466,11 +416,9 @@ function initFromURL() {
   }
 }
 
-// ===== モバイルメニュー =====
 function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('open'); }
 function closeMenu()  { document.getElementById('mobile-menu').classList.remove('open'); }
 
-<script>
 load();
 </script>
 </body>
