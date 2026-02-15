@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>酒井千絵 — 読み物・授業フィードバック</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;700&family=Source+Sans+3:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: #f8f9fa;
+  color: #2c2c2c;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+}
+
+/* ===== ヘッダー ===== */
+header {
+  background: #1e3a5f;
+  border-bottom: 3px solid #b07d2a;
+  padding: 20px 24px;
+}
+.header-inner {
+  max-width: 720px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+.header-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1rem; color: #fff;
+  text-decoration: none; line-height: 1.3;
+}
+.header-title span {
+  display: block; font-size: 0.6rem;
+  color: rgba(255,255,255,0.5);
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: 0.1em; margin-top: 2px;
+}
+.col-btn {
+  display: inline-block; padding: 8px 18px;
+  background: #b07d2a; color: #fff;
+  border-radius: 4px; text-decoration: none;
+  font-size: 0.8rem; font-weight: 500;
+  white-space: nowrap; transition: background 0.2s;
+}
+.col-btn:hover { background: #c99a45; }
+
+/* ===== メイン ===== */
+main {
+  max-width: 720px; margin: 0 auto;
+  padding: 48px 24px 64px; flex: 1; width: 100%;
+}
+
+/* プロフィールブロック */
+.profile-block {
+  background: #fff; border: 1px solid #dee2e6;
+  border-radius: 10px; padding: 32px 36px;
+  margin-bottom: 24px;
+  display: flex; gap: 28px; align-items: flex-start;
+}
+.profile-photo {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: #f1f3f5; border: 2px solid #dee2e6;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; flex-shrink: 0; overflow: hidden;
+}
+.profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+.profile-text h1 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.4rem; color: #1e3a5f; margin-bottom: 2px;
+}
+.profile-text .en { font-size: 0.78rem; color: #868e96; margin-bottom: 10px; }
+.profile-text .pos {
+  display: inline-block; background: #1e3a5f; color: #fff;
+  font-size: 0.68rem; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+}
+.profile-text p {
+  font-size: 0.86rem; color: #495057; line-height: 1.85;
+}
+
+/* このページについて */
+.about-block {
+  background: #fff; border: 1px solid #dee2e6;
+  border-radius: 10px; padding: 28px 32px;
+  margin-bottom: 24px;
+}
+.about-block h2 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1rem; color: #1e3a5f;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 2px solid #f1f3f5;
+}
+.about-block p {
+  font-size: 0.86rem; color: #495057;
+  line-height: 1.9; margin-bottom: 10px;
+}
+.about-block p:last-child { margin-bottom: 0; }
+
+/* メインリンク */
+.main-link {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #1e3a5f; color: #fff;
+  border-radius: 8px; padding: 20px 24px;
+  text-decoration: none; margin-bottom: 12px;
+  transition: background 0.2s;
+}
+.main-link:hover { background: #2a4f7c; }
+.main-link-left { }
+.main-link-label {
+  font-size: 0.65rem; color: rgba(255,255,255,0.55);
+  letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px;
+}
+.main-link-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.05rem; color: #fff; margin-bottom: 4px;
+}
+.main-link-desc { font-size: 0.78rem; color: rgba(255,255,255,0.65); }
+.main-link-arrow { font-size: 1.4rem; color: #b07d2a; flex-shrink: 0; }
+
+/* サブリンク */
+.sub-links {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 24px;
+}
+.sub-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; border-radius: 8px;
+  background: #fff; border: 1px solid #dee2e6;
+  text-decoration: none; color: #2c2c2c;
+  transition: all 0.15s;
+}
+.sub-link:hover { border-color: #1e3a5f; color: #1e3a5f; }
+.sub-link-icon { font-size: 1.1rem; flex-shrink: 0; }
+.sub-link-name { font-size: 0.82rem; font-weight: 500; }
+.sub-link-desc { font-size: 0.65rem; color: #868e96; }
+
+/* ===== フッター ===== */
+footer {
+  background: #fff; border-top: 1px solid #dee2e6;
+  padding: 18px 24px; text-align: center;
+  font-size: 0.7rem; color: #868e96; line-height: 2;
+}
+footer a { color: #1e3a5f; text-decoration: none; }
+
+@media (max-width: 600px) {
+  .profile-block { flex-direction: column; gap: 16px; padding: 22px 20px; }
+  .about-block { padding: 20px 20px; }
+  .sub-links { grid-template-columns: 1fr; }
+  main { padding: 28px 14px 48px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="header-title">
+      酒井千絵研究室
+      <span>KANSAI UNIVERSITY · SOCIOLOGY</span>
+    </a>
+    <a href="column.html" class="col-btn">読み物を見る →</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- プロフィール -->
+  <div class="profile-block">
+    <div class="profile-photo">
+      <!-- 写真: <img src="images/profile.jpg" alt="酒井千絵"> -->
+      👤
+    </div>
+    <div class="profile-text">
+      <h1>酒井　千絵</h1>
+      <p class="en">Chie Sakai, Ph.D.</p>
+      <span class="pos">関西大学 社会学部 教授</span>
+      <p>国際社会学を専門とし、移民・多文化社会・国際移動を研究しています。移民と博物館の関係、現代日本からの国際移動、ジェンダーとキャリア、20世紀初頭のシカゴ社会学における女性の役割などがおもな研究テーマです。</p>
+    </div>
+  </div>
+
+  <!-- このサイトについて -->
+  <div class="about-block">
+    <h2>📌 このサイトについて</h2>
+    <p>このページは、授業フィードバックや研究コラムを週1回程度発信するためのサイトです。授業で伝わりにくかった点の補足、研究テーマに関連したコラムなどを掲載しています。</p>
+    <p>研究業績・ゼミ情報・公式プロフィールは<a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank" style="color:#1e3a5f;font-weight:500;">研究室公式サイト（WordPress）</a>をご覧ください。</p>
+  </div>
+
+  <!-- メインリンク：読み物 -->
+  <a href="column.html" class="main-link">
+    <div class="main-link-left">
+      <div class="main-link-label">Main Content</div>
+      <div class="main-link-title">📝 読み物</div>
+      <div class="main-link-desc">研究コラム・授業フィードバック（週1更新）</div>
+    </div>
+    <span class="main-link-arrow">→</span>
+  </a>
+
+  <!-- サブリンク -->
+  <div class="sub-links">
+    <a class="sub-link" href="teaching.html">
+      <span class="sub-link-icon">🏫</span>
+      <div><div class="sub-link-name">授業</div><div class="sub-link-desc">科目紹介・読み物へのリンク</div></div>
+    </a>
+    <a class="sub-link" href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank">
+      <span class="sub-link-icon">🏠</span>
+      <div><div class="sub-link-name">研究室公式サイト ↗</div><div class="sub-link-desc">研究・業績・ゼミ情報</div></div>
+    </a>
+    <a class="sub-link" href="https://wps.itc.kansai-u.ac.jp/chiesakai/thinking-about-our-globalizing-society/publications/" target="_blank">
+      <span class="sub-link-icon">📄</span>
+      <div><div class="sub-link-name">業績リスト ↗</div><div class="sub-link-desc">論文・著書・発表</div></div>
+    </a>
+    <a class="sub-link" href="https://wps.itc.kansai-u.ac.jp/chiesakai/thinking-about-our-globalizing-society/lectures/seminar2024" target="_blank">
+      <span class="sub-link-icon">👥</span>
+      <div><div class="sub-link-name">ゼミ情報 ↗</div><div class="sub-link-desc">専門演習・卒業研究</div></div>
+    </a>
+  </div>
+
+</main>
+
+<footer>
+  <p>酒井千絵（Chie Sakai）· 関西大学社会学部</p>
+  <p><a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank">研究室公式サイト</a> · <a href="mailto:chiesakai@kansai-u.ac.jp">メール</a></p>
+</footer>
+
+</body>
+</html>

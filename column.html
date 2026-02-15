@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>読み物 — 酒井千絵研究室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;700&family=Source+Sans+3:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: #f8f9fa; color: #2c2c2c; line-height: 1.75;
+}
+
+/* ===== ヘッダー ===== */
+header {
+  background: #1e3a5f; border-bottom: 3px solid #b07d2a;
+  padding: 0 24px; position: sticky; top: 0; z-index: 100;
+}
+.header-inner {
+  max-width: 960px; margin: 0 auto; height: 52px;
+  display: flex; align-items: center; gap: 8px;
+}
+.header-logo {
+  font-family: 'Noto Serif JP', serif; font-size: 0.9rem;
+  color: #fff; text-decoration: none; margin-right: 6px; white-space: nowrap;
+}
+.header-nav { display: flex; gap: 2px; list-style: none; flex: 1; }
+.header-nav a {
+  color: rgba(255,255,255,0.7); text-decoration: none;
+  font-size: 0.75rem; padding: 5px 10px; border-radius: 4px;
+  transition: all 0.15s; white-space: nowrap;
+}
+.header-nav a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.header-nav a.active { color: #c99a45; }
+
+.hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; margin-left: auto; }
+.hamburger span { display: block; width: 20px; height: 2px; background: #fff; border-radius: 1px; }
+.mobile-menu {
+  display: none; background: #2a4f7c;
+  padding: 8px 24px 14px; border-top: 1px solid rgba(255,255,255,0.1);
+}
+.mobile-menu a { display: block; color: rgba(255,255,255,0.8); text-decoration: none; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 0.88rem; }
+.mobile-menu.open { display: block; }
+
+/* ===== レイアウト ===== */
+.page-wrap {
+  max-width: 960px; margin: 0 auto; padding: 32px 24px 80px;
+  display: grid; grid-template-columns: 200px 1fr; gap: 28px; align-items: start;
+}
+
+/* ===== サイドバー ===== */
+.sidebar { position: sticky; top: 64px; }
+.sidebar-block {
+  background: #fff; border: 1px solid #dee2e6;
+  border-radius: 8px; padding: 16px; margin-bottom: 14px;
+}
+.sb-title {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #868e96;
+  margin-bottom: 10px; padding-bottom: 8px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+/* タグボタン */
+.tag-group { margin-bottom: 10px; }
+.tag-group-label { font-size: 0.6rem; color: #adb5bd; margin-bottom: 5px; display: block; letter-spacing: 0.08em; }
+
+.tag-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 20px; margin: 2px 2px 2px 0;
+  border: 1px solid; font-size: 0.68rem; cursor: pointer;
+  transition: all 0.15s; background: transparent;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.tag-btn.all   { border-color: #495057; color: #495057; }
+.tag-btn.lec   { border-color: #1864ab; color: #1864ab; }
+.tag-btn.sem   { border-color: #087f5b; color: #087f5b; }
+.tag-btn.res   { border-color: #6741d9; color: #6741d9; }
+.tag-btn.note  { border-color: #855a00; color: #855a00; }
+
+.tag-btn.active, .tag-btn:hover {
+  color: #fff !important;
+}
+.tag-btn.all.active,  .tag-btn.all:hover  { background: #495057; border-color: #495057; }
+.tag-btn.lec.active,  .tag-btn.lec:hover  { background: #1864ab; border-color: #1864ab; }
+.tag-btn.sem.active,  .tag-btn.sem:hover  { background: #087f5b; border-color: #087f5b; }
+.tag-btn.res.active,  .tag-btn.res:hover  { background: #6741d9; border-color: #6741d9; }
+.tag-btn.note.active, .tag-btn.note:hover { background: #855a00; border-color: #855a00; }
+
+.tag-count { font-size: 0.6rem; background: rgba(0,0,0,0.1); border-radius: 10px; padding: 0 5px; }
+
+/* ===== 記事エリア ===== */
+.articles-area { min-width: 0; }
+.result-bar {
+  font-size: 0.75rem; color: #868e96; margin-bottom: 16px;
+  padding: 7px 12px; background: #fff; border-radius: 4px;
+  border: 1px solid #dee2e6; display: flex; align-items: center; gap: 8px;
+}
+.result-tag-badge {
+  background: #e9ecef; padding: 2px 8px; border-radius: 3px;
+  font-size: 0.68rem; color: #495057;
+}
+
+/* 記事カード */
+.article-card {
+  background: #fff; border: 1px solid #dee2e6; border-radius: 8px;
+  margin-bottom: 12px; overflow: hidden;
+  border-left: 4px solid #dee2e6;
+  transition: box-shadow 0.15s, transform 0.15s;
+  cursor: pointer;
+}
+.article-card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.08); transform: translateY(-1px); }
+.article-card.lec-card  { border-left-color: #1864ab; }
+.article-card.sem-card  { border-left-color: #087f5b; }
+.article-card.res-card  { border-left-color: #6741d9; }
+
+.card-inner { padding: 18px 20px; }
+.card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
+.card-date { font-size: 0.7rem; color: #868e96; font-family: 'Source Sans 3', monospace; }
+.card-tag {
+  display: inline-block; padding: 1px 7px; border-radius: 3px;
+  font-size: 0.62rem; font-weight: 500;
+}
+.ct-lec  { background: #d0ebff; color: #1864ab; }
+.ct-sem  { background: #c3fae8; color: #087f5b; }
+.ct-res  { background: #e5dbff; color: #6741d9; }
+.ct-note { background: #fff3bf; color: #855a00; }
+
+.card-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1rem; color: #1e3a5f; line-height: 1.5; margin-bottom: 8px;
+}
+.card-preview {
+  font-size: 0.82rem; color: #868e96; line-height: 1.7;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card-footer {
+  padding: 10px 20px; background: #f8f9fa;
+  border-top: 1px solid #f1f3f5;
+  display: flex; justify-content: flex-end;
+}
+.read-btn {
+  font-size: 0.73rem; color: #1e3a5f; font-weight: 500;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  padding: 0; transition: color 0.15s;
+}
+.read-btn:hover { color: #b07d2a; }
+
+.empty-msg {
+  text-align: center; padding: 48px 20px; color: #868e96;
+  background: #fff; border: 1px solid #dee2e6; border-radius: 8px;
+  font-size: 0.84rem; line-height: 2.2;
+}
+
+/* ===== 記事モーダル ===== */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 300;
+  overflow-y: auto; padding: 70px 16px 40px;
+}
+.overlay.open { display: block; }
+.modal {
+  background: #fff; border-radius: 10px; max-width: 680px;
+  margin: 0 auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: slideUp 0.22s ease;
+}
+@keyframes slideUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+
+.modal-head {
+  padding: 24px 28px 16px;
+  border-bottom: 1px solid #f1f3f5;
+}
+.modal-meta { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.modal-date { font-size: 0.72rem; color: #868e96; font-family: 'Source Sans 3', monospace; }
+.modal-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.2rem; color: #1e3a5f; line-height: 1.5;
+}
+
+/* 本文レンダリング */
+.modal-body {
+  padding: 20px 28px 28px;
+  font-size: 0.88rem; line-height: 2; color: #333;
+}
+.modal-body p { margin-bottom: 1em; }
+.modal-body p:last-child { margin-bottom: 0; }
+.modal-body h3 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 0.95rem; color: #1e3a5f;
+  margin: 1.4em 0 0.5em; padding-left: 10px;
+  border-left: 3px solid #b07d2a;
+}
+.modal-body strong { font-weight: 700; }
+.modal-body em { font-style: italic; color: #495057; }
+.modal-body a { color: #1864ab; }
+
+.modal-close {
+  display: block; width: 100%; padding: 13px;
+  background: #f8f9fa; border: none; border-top: 1px solid #dee2e6;
+  color: #868e96; font-size: 0.8rem; cursor: pointer;
+  border-radius: 0 0 10px 10px; transition: background 0.15s;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.modal-close:hover { background: #e9ecef; }
+
+/* ===== フッター ===== */
+footer {
+  background: #1e3a5f; color: rgba(255,255,255,0.5);
+  padding: 24px; text-align: center;
+  font-size: 0.72rem; line-height: 2;
+}
+footer a { color: #c99a45; text-decoration: none; }
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 680px) {
+  .header-nav { display: none; }
+  .hamburger { display: flex; }
+  .page-wrap { grid-template-columns: 1fr; padding: 20px 14px 60px; }
+  .sidebar { position: static; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="header-logo">酒井千絵研究室</a>
+    <ul class="header-nav">
+      <li><a href="index.html">ホーム</a></li>
+      <li><a href="column.html" class="active">読み物</a></li>
+      <li><a href="teaching.html">授業</a></li>
+      <li><a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank">公式サイト ↗</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html" onclick="closeMenu()">ホーム</a>
+    <a href="column.html" onclick="closeMenu()">読み物</a>
+    <a href="teaching.html" onclick="closeMenu()">授業</a>
+    <a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank">公式サイト ↗</a>
+  </div>
+</header>
+
+<div class="page-wrap">
+
+  <!-- サイドバー -->
+  <aside class="sidebar">
+    <div class="sidebar-block">
+      <div class="sb-title">絞り込み</div>
+      <div class="tag-group">
+        <button class="tag-btn all active" onclick="filter('all',this)">
+          すべて <span class="tag-count" id="c-all">0</span>
+        </button>
+      </div>
+      <div class="tag-group">
+        <span class="tag-group-label">授業補足 — 春学期</span>
+        <button class="tag-btn lec" onclick="filter('国際社会学1',this)">国際社会学1 <span class="tag-count" id="c-国際社会学1">0</span></button>
+        <button class="tag-btn lec" onclick="filter('基礎研究1',this)">基礎研究1 <span class="tag-count" id="c-基礎研究1">0</span></button>
+        <button class="tag-btn sem" onclick="filter('専門演習1',this)">専門演習1 <span class="tag-count" id="c-専門演習1">0</span></button>
+        <button class="tag-btn sem" onclick="filter('卒業研究1',this)">卒業研究1 <span class="tag-count" id="c-卒業研究1">0</span></button>
+      </div>
+      <div class="tag-group">
+        <span class="tag-group-label">研究・コラム</span>
+        <button class="tag-btn res" onclick="filter('研究コラム',this)">研究コラム <span class="tag-count" id="c-研究コラム">0</span></button>
+        <button class="tag-btn res" onclick="filter('移民と博物館',this)">移民と博物館 <span class="tag-count" id="c-移民と博物館">0</span></button>
+        <button class="tag-btn res" onclick="filter('学会',this)">学会 <span class="tag-count" id="c-学会">0</span></button>
+      </div>
+      <div class="tag-group">
+        <span class="tag-group-label">その他</span>
+        <button class="tag-btn note" onclick="filter('授業補足',this)">授業補足（全科目） <span class="tag-count" id="c-授業補足">0</span></button>
+      </div>
+    </div>
+    <div class="sidebar-block" style="font-size:0.74rem; color:#868e96; line-height:1.7;">
+      週1回程度更新しています。<br>
+      研究・業績は<a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank" style="color:#1e3a5f;">公式サイト ↗</a>
+    </div>
+  </aside>
+
+  <!-- 記事エリア -->
+  <main>
+    <div class="result-bar" id="result-bar">読み込み中...</div>
+    <div id="article-list"></div>
+  </main>
+
+</div>
+
+<!-- モーダル -->
+<div class="overlay" id="overlay" onclick="closeIfBg(event)">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div class="modal-meta" id="modal-meta"></div>
+      <h2 class="modal-title" id="modal-title"></h2>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <button class="modal-close" onclick="closeModal()">✕ 閉じる</button>
+  </div>
+</div>
+
+<footer>
+  <p>酒井千絵研究室（関西大学社会学部）</p>
+  <p><a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank">研究室公式サイト</a></p>
+</footer>
+
+<script>
+// ===== タグ設定 =====
+const TAG_TYPE = {
+  '国際社会学1':'lec', '基礎研究1':'lec',
+  '専門演習1':'sem',  '卒業研究1':'sem',
+  '研究コラム':'res', '移民と博物館':'res', '学会':'res',
+  '授業補足':'note',
+};
+function tt(tag) { return TAG_TYPE[tag] || 'note'; }
+
+function cardClass(tags) {
+  if (tags.some(t => ['専門演習1','卒業研究1'].includes(t))) return 'sem-card';
+  if (tags.some(t => ['国際社会学1','基礎研究1','授業補足'].includes(t))) return 'lec-card';
+  if (tags.some(t => ['研究コラム','移民と博物館','学会'].includes(t))) return 'res-card';
+  return '';
+}
+
+// ===== 本文をHTMLに変換 =====
+// ・空行 → 段落区切り
+// ・### 見出し → <h3>
+// ・**太字** → <strong>
+function renderBody(text) {
+  return text
+    .split(/\n\n+/)
+    .map(para => {
+      para = para.trim();
+      if (!para) return '';
+      if (para.startsWith('### ')) {
+        return `<h3>${para.slice(4)}</h3>`;
+      }
+      const line = para
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+      return `<p>${line}</p>`;
+    })
+    .join('');
+}
+
+// ===== データ読み込み =====
+let articles = [];
+let currentTag = 'all';
+
+async function load() {
+  try {
+    const res = await fetch('./data/column.json');
+    articles = await res.json();
+    articles.sort((a, b) => b.date.localeCompare(a.date));
+    updateCounts();
+    render('all');
+    initFromURL();
+  } catch(e) {
+    document.getElementById('result-bar').textContent = 'データの読み込みに失敗しました。';
+  }
+}
+
+// ===== 件数バッジ更新 =====
+function updateCounts() {
+  const tags = ['all','国際社会学1','基礎研究1','専門演習1','卒業研究1',
+                '研究コラム','移民と博物館','学会','授業補足'];
+  tags.forEach(tag => {
+    const el = document.getElementById('c-' + tag);
+    if (!el) return;
+    el.textContent = tag === 'all'
+      ? articles.length
+      : articles.filter(a => a.tags.includes(tag)).length;
+  });
+}
+
+// ===== 絞り込み =====
+function filter(tag, btn) {
+  currentTag = tag;
+  document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render(tag);
+  // URLパラメータ更新（ブラウザ履歴には残さない）
+  const url = new URL(window.location);
+  tag === 'all' ? url.searchParams.delete('tag') : url.searchParams.set('tag', tag);
+  history.replaceState(null, '', url);
+}
+
+// ===== レンダリング =====
+function render(tag) {
+  const list = tag === 'all' ? articles : articles.filter(a => a.tags.includes(tag));
+  const bar = document.getElementById('result-bar');
+  const container = document.getElementById('article-list');
+
+  bar.innerHTML = tag === 'all'
+    ? `全 <strong>${list.length}</strong> 件`
+    : `<span class="result-tag-badge">#${tag}</span> <strong>${list.length}</strong> 件`;
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-msg">このタグの記事はまだありません。</div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(a => {
+    const tagsHTML = a.tags.map(t =>
+      `<span class="card-tag ct-${tt(t)}">${t}</span>`
+    ).join('');
+    const preview = a.body.replace(/#{1,3}\s/g, '').replace(/\*\*/g, '').slice(0, 100) + '…';
+    return `
+      <div class="article-card ${cardClass(a.tags)}" onclick="openModal('${a.id}')">
+        <div class="card-inner">
+          <div class="card-meta">
+            <span class="card-date">${a.date.replace(/-/g, '.')}</span>
+            ${tagsHTML}
+          </div>
+          <h2 class="card-title">${a.title}</h2>
+          <p class="card-preview">${preview}</p>
+        </div>
+        <div class="card-footer">
+          <button class="read-btn" onclick="openModal('${a.id}');event.stopPropagation();">続きを読む →</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ===== モーダル =====
+function openModal(id) {
+  const a = articles.find(x => x.id === id);
+  if (!a) return;
+  const tagsHTML = a.tags.map(t =>
+    `<span class="card-tag ct-${tt(t)}">${t}</span>`
+  ).join('');
+  document.getElementById('modal-meta').innerHTML =
+    `<span class="modal-date">${a.date.replace(/-/g,'.')}</span>${tagsHTML}`;
+  document.getElementById('modal-title').textContent = a.title;
+  document.getElementById('modal-body').innerHTML = renderBody(a.body);
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeIfBg(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ===== URL パラメータ初期化 =====
+function initFromURL() {
+  const tag = new URLSearchParams(window.location.search).get('tag');
+  if (tag) {
+    const btn = document.querySelector(`[onclick="filter('${tag}',this)"]`);
+    if (btn) filter(tag, btn);
+  }
+}
+
+// ===== モバイルメニュー =====
+function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('open'); }
+function closeMenu()  { document.getElementById('mobile-menu').classList.remove('open'); }
+
+load();
+</script>
+</body>
+</html>
