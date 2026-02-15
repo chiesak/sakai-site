@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>読み物 — 酒井千絵研究室</title>
+<title>コラム — 酒井千絵研究室</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;700&family=Source+Sans+3:wght@300;400&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -256,21 +256,29 @@ footer a { color: #c99a45; text-decoration: none; }
         </button>
       </div>
       <div class="tag-group">
-        <span class="tag-group-label">授業補足 — 春学期</span>
+        <span class="tag-group-label">授業補足　-　学部</span>
+        
+        <button class="tag-btn sem" onclick="filter('専門演習',this)">専門演習 <span class="tag-count" id="c-専門演習">0</span></button>
+        <button class="tag-btn sem" onclick="filter('卒業研究',this)">卒業研究 <span class="tag-count" id="c-卒業研究">0</span></button>
         <button class="tag-btn lec" onclick="filter('国際社会学1',this)">国際社会学1 <span class="tag-count" id="c-国際社会学1">0</span></button>
+        <button class="tag-btn lec" onclick="filter('国際社会学1',this)">国際社会学2 <span class="tag-count" id="c-国際社会学2">0</span></button>
         <button class="tag-btn lec" onclick="filter('基礎研究1',this)">基礎研究1 <span class="tag-count" id="c-基礎研究1">0</span></button>
-        <button class="tag-btn sem" onclick="filter('専門演習1',this)">専門演習1 <span class="tag-count" id="c-専門演習1">0</span></button>
-        <button class="tag-btn sem" onclick="filter('卒業研究1',this)">卒業研究1 <span class="tag-count" id="c-卒業研究1">0</span></button>
       </div>
+      <span class="tag-group-label">授業補足　-　大学院</span>
+        
+        <button class="tag-btn sem" onclick="filter('演習等',this)">演習等 <span class="tag-count" id="c-専門演習1">0</span></button>
+        <button class="tag-btn sem" onclick="filter('M国際社会学研究',this)">M国際社会学研究 <span class="tag-count" id="c-卒業研究1">0</span></button>
+
       <div class="tag-group">
         <span class="tag-group-label">研究・コラム</span>
         <button class="tag-btn res" onclick="filter('研究コラム',this)">研究コラム <span class="tag-count" id="c-研究コラム">0</span></button>
-        <button class="tag-btn res" onclick="filter('移民と博物館',this)">移民と博物館 <span class="tag-count" id="c-移民と博物館">0</span></button>
-        <button class="tag-btn res" onclick="filter('学会',this)">学会 <span class="tag-count" id="c-学会">0</span></button>
+        <button class="tag-btn res" onclick="filter('最近読んだ本',this)">最近読んだ本 <span class="tag-count" id="c-最近読んだ本">0</span></button>
+        <button class="tag-btn res" onclick="filter('学会・調査',this)">学会・調査 <span class="tag-count" id="c-学会・調査">0</span></button>
       </div>
       <div class="tag-group">
         <span class="tag-group-label">その他</span>
         <button class="tag-btn note" onclick="filter('授業補足',this)">授業補足（全科目） <span class="tag-count" id="c-授業補足">0</span></button>
+        <button class="tag-btn note" onclick="filter('業務連絡',this)">業務連絡 <span class="tag-count" id="c-業務連絡">0</span></button>
       </div>
     </div>
     <div class="sidebar-block" style="font-size:0.74rem; color:#868e96; line-height:1.7;">
