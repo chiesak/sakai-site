@@ -305,6 +305,10 @@ function renderBody(text) {
       para = para.trim();
       if (!para) return '';
       if (para.startsWith('### ')) return `<h3>${para.slice(4)}</h3>`;
+      if (para.startsWith('![')) {
+        const m = para.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+        if (m) return `<img src="${m[2]}" alt="${m[1]}" style="max-width:100%; border-radius:6px; margin:8px 0; display:block;">`;
+      }
       const line = para
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n/g, '<br>');
