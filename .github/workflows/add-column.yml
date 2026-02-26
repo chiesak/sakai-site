@@ -35,8 +35,8 @@ jobs:
             const tagsRaw = parseField(issueBody, 'タグ');
             const body = parseField(issueBody, '本文');
 
-            // Parse tags (comma-separated from dropdown)
-            const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t.length > 0);
+            // Parse tags (newline or comma separated from dropdown)
+            const tags = tagsRaw.split(/[,\n]/).map(t => t.trim()).filter(t => t.length > 0);
 
             // Generate date and ID
             const now = new Date();
