@@ -1,6 +1,5 @@
-name: コラム投稿 (Add Column Entry)
-description: 新しいコラムを追加する
-title: ""
+name: Add Column Entry
+description: Add a new column entry
 body:
   - type: input
     id: title
