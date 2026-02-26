@@ -1,13 +1,6 @@
 name: Add Column Entry
 description: Add a new column entry
 body:
-  - type: input
-    id: title
-    attributes:
-      label: タイトル
-      placeholder: "例: セカイノコトワリ＠京都国立近代美術館"
-    validations:
-      required: true
   - type: dropdown
     id: tags
     attributes:
