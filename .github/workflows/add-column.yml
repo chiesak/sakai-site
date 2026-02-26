@@ -6,7 +6,7 @@ on:
 
 jobs:
   add-entry:
-    if: contains(github.event.issue.labels.*.name, 'column-entry')
+    if: contains(github.event.issue.body, '### タイトル')
     runs-on: ubuntu-latest
     permissions:
       contents: write
