@@ -6,7 +6,7 @@ on:
 
 jobs:
   add-entry:
-    if: contains(github.event.issue.body, '### タイトル')
+    if: contains(github.event.issue.body, '### タグ')
     runs-on: ubuntu-latest
     permissions:
       contents: write
