@@ -1,0 +1,32 @@
+name: コラム投稿 (Add Column Entry)
+description: 新しいコラムを追加する
+title: "[column] "
+labels: ["column-entry"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: タイトル
+      placeholder: "例: セカイノコトワリ＠京都国立近代美術館"
+    validations:
+      required: true
+  - type: dropdown
+    id: tags
+    attributes:
+      label: タグ
+      multiple: true
+      options:
+        - 研究コラム
+        - 授業補足
+        - 専門演習
+        - 卒業研究
+    validations:
+      required: true
+  - type: textarea
+    id: body
+    attributes:
+      label: 本文
+      description: コラムの本文を入力してください
+      placeholder: "本文をここに書いてください..."
+    validations:
+      required: true

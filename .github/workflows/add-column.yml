@@ -1,75 +1,84 @@
 name: Add Column Entry
 
 on:
-  workflow_dispatch:
-    inputs:
-      title:
-        description: 'タイトル (Title)'
-        required: true
-        type: string
-      tags:
-        description: 'タグ (comma separated, e.g. 研究コラム,授業補足)'
-        required: true
-        default: '研究コラム'
-        type: string
-      body:
-        description: '本文 (Body text)'
-        required: true
-        type: string
+  issues:
+    types: [opened]
 
 jobs:
   add-entry:
+    if: contains(github.event.issue.labels.*.name, 'column-entry')
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Add new entry to column.json
+      - name: Parse issue and update column.json
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const path = 'data/column.json';
-            const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const columnPath = 'data/column.json';
+            const data = JSON.parse(fs.readFileSync(columnPath, 'utf8'));
 
+            const issueBody = context.payload.issue.body;
+
+            // Parse form fields from issue body
+            function parseField(body, label) {
+              const regex = new RegExp(`### ${label}\\s*\\n\\s*([\\s\\S]*?)(?=\\n### |$)`);
+              const match = body.match(regex);
+              return match ? match[1].trim() : '';
+            }
+
+            const title = parseField(issueBody, 'タイトル');
+            const tagsRaw = parseField(issueBody, 'タグ');
+            const body = parseField(issueBody, '本文');
+
+            // Parse tags (comma-separated from dropdown)
+            const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t.length > 0);
+
+            // Generate date and ID
             const now = new Date();
             const yyyy = now.getFullYear().toString();
             const mm = (now.getMonth() + 1).toString().padStart(2, '0');
             const dd = now.getDate().toString().padStart(2, '0');
             const dateStr = `${yyyy}-${mm}-${dd}`;
-
-            // Generate unique ID: date + letter suffix
             const todayPrefix = `${yyyy}${mm}${dd}`;
             const todayEntries = data.filter(e => e.id.startsWith(todayPrefix));
-            const suffix = String.fromCharCode(97 + todayEntries.length); // a, b, c...
+            const suffix = String.fromCharCode(97 + todayEntries.length);
             const id = `${todayPrefix}${suffix}`;
 
-            // Parse tags from comma-separated string
-            const tags = context.payload.inputs.tags
-              .split(',')
-              .map(t => t.trim())
-              .filter(t => t.length > 0);
-
-            const newEntry = {
-              id,
-              date: dateStr,
-              title: context.payload.inputs.title,
-              tags,
-              body: context.payload.inputs.body
-            };
-
-            // Add new entry at the beginning
+            const newEntry = { id, date: dateStr, title, tags, body };
             data.unshift(newEntry);
-            fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n', 'utf8');
+            fs.writeFileSync(columnPath, JSON.stringify(data, null, 2) + '\n', 'utf8');
 
-            core.summary.addRaw(`Added entry: **${newEntry.title}** (${id})`);
-            await core.summary.write();
+            // Export for commit message
+            const core = require('@actions/core');
+            core.exportVariable('ENTRY_TITLE', title);
+            core.exportVariable('ISSUE_NUMBER', context.payload.issue.number);
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/column.json
-          git commit -m "Add column entry: ${{ inputs.title }}"
+          git commit -m "Add column entry: ${ENTRY_TITLE} (closes #${ISSUE_NUMBER})"
           git push
+
+      - name: Close issue with comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: '✅ コラムを追加しました！'
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              state: 'closed'
+            });
