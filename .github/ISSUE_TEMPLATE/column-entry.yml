@@ -27,8 +27,8 @@ body:
         - 演習等
         - M国際車気学研究
         - 最近読んだ本
-        – 学会・調査
-        – 業務連絡
+        - 学会・調査
+        - 業務連絡
     validations:
       required: true
   - type: textarea
