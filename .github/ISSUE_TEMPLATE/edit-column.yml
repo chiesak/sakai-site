@@ -1,0 +1,47 @@
+name: Edit Column Entry
+description: Edit an existing column entry
+body:
+  - type: input
+    id: entry-id
+    attributes:
+      label: 記事ID
+      description: "修正したい記事のID（例: 20260226a）。column.jsonで確認できます。"
+      placeholder: "20260226a"
+    validations:
+      required: true
+  - type: input
+    id: new-title
+    attributes:
+      label: 新しいタイトル（変更する場合のみ）
+      placeholder: "空欄なら変更なし"
+    validations:
+      required: false
+  - type: dropdown
+    id: new-tags
+    attributes:
+      label: 新しいタグ（変更する場合のみ）
+      multiple: true
+      options:
+        - 研究コラム
+        - 授業補足
+        - 専門演習
+        - 卒業研究
+        - 国際社会学1
+        - 国際社会学2
+        - 基礎研究1
+        - 基礎社会学2
+        - 演習等
+        - M国際車気学研究
+        - 最近読んだ本
+        - 学会・調査
+        - 業務連絡
+    validations:
+      required: false
+  - type: textarea
+    id: new-body
+    attributes:
+      label: 新しい本文（変更する場合のみ）
+      description: 空欄なら変更なし。変更する場合は本文全体を入力してください。
+      placeholder: "空欄なら変更なし"
+    validations:
+      required: false

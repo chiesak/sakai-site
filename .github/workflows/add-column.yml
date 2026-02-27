@@ -1,4 +1,4 @@
-name: Add Column Entry
+name: Column Entry Manager
 
 on:
   issues:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   add-entry:
-    if: contains(github.event.issue.body, '### タグ')
+    if: contains(github.event.issue.body, '### タグ') && !contains(github.event.issue.body, '### 記事ID')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -68,6 +68,72 @@ jobs:
               repo: context.repo.repo,
               issue_number: issueNumber,
               body: '✅ コラムを追加しました！'
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              state: 'closed'
+            });
+
+  edit-entry:
+    if: contains(github.event.issue.body, '### 記事ID')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Edit entry and commit
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+            const columnPath = 'data/column.json';
+            const data = JSON.parse(fs.readFileSync(columnPath, 'utf8'));
+
+            const issueBody = context.payload.issue.body;
+            const issueNumber = context.payload.issue.number;
+
+            function parseField(body, label) {
+              const regex = new RegExp(`### ${label}[\\s\\S]*?\\n\\s*([\\s\\S]*?)(?=\\n### |$)`);
+              const match = body.match(regex);
+              return match ? match[1].trim() : '';
+            }
+
+            const entryId = parseField(issueBody, '記事ID');
+            const newTitle = parseField(issueBody, '新しいタイトル（変更する場合のみ）');
+            const newTagsRaw = parseField(issueBody, '新しいタグ（変更する場合のみ）');
+            const newBody = parseField(issueBody, '新しい本文（変更する場合のみ）');
+
+            const idx = data.findIndex(e => e.id === entryId);
+            if (idx === -1) {
+              core.setFailed(`Entry not found: ${entryId}`);
+              return;
+            }
+
+            if (newTitle) data[idx].title = newTitle;
+            if (newTagsRaw) {
+              const tags = newTagsRaw.split(/[,\n]/).map(t => t.trim()).filter(t => t.length > 0);
+              if (tags.length > 0) data[idx].tags = tags;
+            }
+            if (newBody) data[idx].body = newBody;
+
+            fs.writeFileSync(columnPath, JSON.stringify(data, null, 2) + '\n', 'utf8');
+
+            execSync('git config user.name "github-actions[bot]"');
+            execSync('git config user.email "github-actions[bot]@users.noreply.github.com"');
+            execSync('git add data/column.json');
+            execSync(`git commit -m "Edit column entry ${entryId} #${issueNumber}"`);
+            execSync('git push');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `✅ 記事 ${entryId} を修正しました！`
             });
             await github.rest.issues.update({
               owner: context.repo.owner,
