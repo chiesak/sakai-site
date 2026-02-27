@@ -142,6 +142,19 @@ header {
   background: #fff; border: 1px solid #dee2e6; border-radius: 8px;
   font-size: 0.84rem; line-height: 2.2;
 }
+.pagination {
+  display: flex; justify-content: center; align-items: center; gap: 6px;
+  margin-top: 20px; flex-wrap: wrap;
+}
+.page-btn {
+  padding: 6px 12px; border: 1px solid #dee2e6; border-radius: 4px;
+  background: #fff; color: #495057; font-size: 0.78rem; cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s;
+}
+.page-btn:hover { background: #e9ecef; }
+.page-btn.active { background: #1e3a5f; color: #fff; border-color: #1e3a5f; }
+.page-btn:disabled { opacity: 0.4; cursor: default; }
+.page-btn:disabled:hover { background: #fff; }
 
 /* ===== モーダル ===== */
 .overlay {
@@ -263,6 +276,7 @@ footer a { color: #c99a45; text-decoration: none; }
   <main class="articles-area">
     <div class="result-bar" id="result-bar">読み込み中...</div>
     <div id="article-list"></div>
+    <div class="pagination" id="pagination"></div>
   </main>
 
 </div>
@@ -323,6 +337,9 @@ function renderBody(text) {
 }
 
 let articles = [];
+const PER_PAGE = 5;
+let currentPage = 1;
+let currentTag = 'all';
 
 async function load() {
   try {
@@ -356,24 +373,40 @@ function updateCounts() {
 function filter(tag, btn) {
   document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  currentPage = 1;
+  currentTag = tag;
   render(tag);
   const url = new URL(window.location);
   tag === 'all' ? url.searchParams.delete('tag') : url.searchParams.set('tag', tag);
+  url.searchParams.delete('page');
   history.replaceState(null, '', url);
+}
+
+function goToPage(page) {
+  currentPage = page;
+  render(currentTag);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function render(tag) {
   const list = tag === 'all' ? articles : articles.filter(a => a.tags.includes(tag));
+  const totalPages = Math.ceil(list.length / PER_PAGE);
+  if (currentPage > totalPages) currentPage = totalPages || 1;
+  const start = (currentPage - 1) * PER_PAGE;
+  const pageList = list.slice(start, start + PER_PAGE);
+
   const bar = document.getElementById('result-bar');
   const container = document.getElementById('article-list');
+  const pagination = document.getElementById('pagination');
   bar.innerHTML = tag === 'all'
     ? `全 <strong>${list.length}</strong> 件`
     : `<span class="result-tag-badge">#${tag}</span> <strong>${list.length}</strong> 件`;
   if (list.length === 0) {
     container.innerHTML = `<div class="empty-msg">このタグの記事はまだありません。</div>`;
+    pagination.innerHTML = '';
     return;
   }
-  container.innerHTML = list.map(a => {
+  container.innerHTML = pageList.map(a => {
     const tagsHTML = a.tags.map(t =>
       `<span class="card-tag ct-${tt(t)}">${t}</span>`
     ).join('');
@@ -396,6 +429,19 @@ function render(tag) {
         </div>
       </div>`;
   }).join('');
+
+  // Pagination
+  if (totalPages <= 1) {
+    pagination.innerHTML = '';
+  } else {
+    let btns = '';
+    btns += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← 前</button>`;
+    for (let i = 1; i <= totalPages; i++) {
+      btns += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+    }
+    btns += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}">次 →</button>`;
+    pagination.innerHTML = btns;
+  }
 }
 
 function openModal(id) {
