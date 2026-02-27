@@ -119,6 +119,10 @@ header {
   font-family: 'Noto Serif JP', serif;
   font-size: 1rem; color: #1e3a5f; line-height: 1.5; margin-bottom: 8px;
 }
+.card-thumb {
+  max-width: 100%; max-height: 200px; object-fit: cover;
+  border-radius: 6px; margin-bottom: 10px; display: block;
+}
 .card-preview {
   font-size: 0.82rem; color: #868e96; line-height: 1.7;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -373,7 +377,9 @@ function render(tag) {
     const tagsHTML = a.tags.map(t =>
       `<span class="card-tag ct-${tt(t)}">${t}</span>`
     ).join('');
-    const preview = a.body.replace(/#{1,3}\s/g, '').replace(/\*\*/g, '').slice(0, 100) + '…';
+    const preview = a.body.replace(/!\[[^\]]*\]\([^)]+\)/g, '').replace(/#{1,3}\s/g, '').replace(/\*\*/g, '').replace(/\n+/g, ' ').slice(0, 100) + '…';
+    const imgMatch = a.body.match(/!\[[^\]]*\]\(([^)]+)\)/);
+    const thumbHTML = imgMatch ? `<img src="${imgMatch[1]}" alt="" class="card-thumb">` : '';
     return `
       <div class="article-card ${cardClass(a.tags)}" onclick="openModal('${a.id}')">
         <div class="card-inner">
@@ -382,6 +388,7 @@ function render(tag) {
             ${tagsHTML}
           </div>
           <h2 class="card-title">${a.title}</h2>
+          ${thumbHTML}
           <p class="card-preview">${preview}</p>
         </div>
         <div class="card-footer">
