@@ -31,7 +31,9 @@ jobs:
             function parseField(body, label) {
               const regex = new RegExp(`### ${label}\\s*\\n\\s*([\\s\\S]*?)(?=\\n### |$)`);
               const match = body.match(regex);
-              return match ? match[1].trim() : '';
+              const value = match ? match[1].trim() : '';
+              // GitHubは未入力の任意項目を "_No response_" と書き出すので、空欄として扱う
+              return value === '_No response_' ? '' : value;
             }
 
             const tagsRaw = parseField(issueBody, 'タグ');
@@ -100,7 +102,9 @@ jobs:
             function parseField(body, label) {
               const regex = new RegExp(`### ${label}[\\s\\S]*?\\n\\s*([\\s\\S]*?)(?=\\n### |$)`);
               const match = body.match(regex);
-              return match ? match[1].trim() : '';
+              const value = match ? match[1].trim() : '';
+              // GitHubは未入力の任意項目を "_No response_" と書き出すので、空欄として扱う
+              return value === '_No response_' ? '' : value;
             }
 
             const entryId = parseField(issueBody, '記事ID');
