@@ -384,7 +384,7 @@ let currentTag = 'all';
 
 async function load() {
   try {
-    const res = await fetch('./data/column.json');
+    const res = await fetch('./data/column.json' , { cache: 'no-cache' });
     articles = await res.json();
     articles.sort((a, b) => b.date.localeCompare(a.date));
     updateCounts();
