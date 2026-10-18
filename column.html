@@ -114,6 +114,7 @@ header {
 .article-card.lec-card { border-left-color: #1864ab; }
 .article-card.sem-card { border-left-color: #087f5b; }
 .article-card.res-card { border-left-color: #6741d9; }
+.article-card.note-card { border-left-color: #fcc419; }
 .card-inner { padding: 18px 20px; }
 .card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
 .card-date { font-size: 0.7rem; color: #868e96; font-family: 'Source Sans 3', monospace; }
@@ -179,6 +180,7 @@ header {
 .list-row.lec-card { border-left-color: #1864ab; }
 .list-row.sem-card { border-left-color: #087f5b; }
 .list-row.res-card { border-left-color: #6741d9; }
+.list-row.note-card { border-left-color: #fcc419; }
 .list-date { font-size: 0.7rem; color: #868e96; font-family: 'Source Sans 3', monospace; flex-shrink: 0; }
 .list-title {
   font-family: 'Noto Serif JP', serif; font-size: 0.9rem; color: #1e3a5f;
@@ -389,9 +391,10 @@ function tt(tag) { return TAG_TYPE[tag] || 'note'; }
 
 function cardClass(tags) {
   if (tags.some(t => ['専門演習','卒業研究','演習等','M国際社会学研究'].includes(t))) return 'sem-card';
-  if (tags.some(t => ['国際社会学1','国際社会学2','基礎研究1','基礎社会学2','授業補足'].includes(t))) return 'lec-card';
+  if (tags.some(t => ['国際社会学1','国際社会学2','基礎研究1','基礎社会学2'].includes(t))) return 'lec-card';
   if (tags.some(t => ['研究コラム','最近読んだ本','学会・調査'].includes(t))) return 'res-card';
-  return '';
+  // 授業補足・業務連絡だけの記事は、タグと同じ黄色の線にする
+  return 'note-card';
 }
 
 /* 画像まわりの共通処理 --------------------------------------------
