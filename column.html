@@ -82,6 +82,16 @@ header {
 .tag-btn.res.active,  .tag-btn.res:hover  { background: #6741d9; border-color: #6741d9; }
 .tag-btn.note.active, .tag-btn.note:hover { background: #855a00; border-color: #855a00; }
 .tag-count { font-size: 0.6rem; background: rgba(0,0,0,0.1); border-radius: 10px; padding: 0 5px; }
+/* 記事が0件のタグは隠す（updateCounts で hidden を付ける） */
+[hidden] { display: none !important; }
+
+/* ===== 検索欄 ===== */
+.search-box {
+  width: 100%; padding: 9px 12px; margin-bottom: 10px;
+  border: 1px solid #dee2e6; border-radius: 4px; background: #fff;
+  font-size: 0.85rem; font-family: 'Noto Sans JP', sans-serif; color: #2c2c2c;
+}
+.search-box:focus { outline: none; border-color: #1e3a5f; }
 
 /* ===== 記事エリア ===== */
 .articles-area { min-width: 0; }
@@ -173,6 +183,13 @@ header {
 .modal-meta { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
 .modal-date { font-size: 0.72rem; color: #868e96; font-family: 'Source Sans 3', monospace; }
 .modal-title { font-family: 'Noto Serif JP', serif; font-size: 1.2rem; color: #1e3a5f; line-height: 1.5; }
+.copy-link-btn {
+  margin-top: 10px; padding: 4px 10px;
+  border: 1px solid #dee2e6; border-radius: 4px; background: #fff;
+  color: #495057; font-size: 0.7rem; cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s;
+}
+.copy-link-btn:hover { background: #e9ecef; }
 .modal-body { padding: 20px 28px 28px; font-size: 0.88rem; line-height: 2; color: #333; }
 .modal-body p { margin-bottom: 1em; }
 .modal-body p:last-child { margin-bottom: 0; }
@@ -210,7 +227,16 @@ footer a { color: #c99a45; text-decoration: none; }
   .header-nav { display: none; }
   .hamburger { display: flex; }
   .page-wrap { grid-template-columns: 1fr; padding: 20px 14px 60px; }
-  .sidebar { position: static; }
+  .sidebar { position: static; min-width: 0; }
+  /* スマホではタグを横1列に並べ、横スクロールで選ぶ */
+  .tag-block {
+    display: flex; gap: 4px; overflow-x: auto; white-space: nowrap;
+    padding: 10px; margin-bottom: 0; -webkit-overflow-scrolling: touch;
+  }
+  .tag-block .sb-title, .tag-block .tag-group-label { display: none; }
+  .tag-block .tag-group { display: contents; }
+  .tag-btn { flex-shrink: 0; margin: 0; }
+  .info-block { display: none; }
 }
 </style>
 </head>
@@ -241,7 +267,7 @@ footer a { color: #c99a45; text-decoration: none; }
 
   <!-- サイドバー -->
   <aside class="sidebar">
-    <div class="sidebar-block">
+    <div class="sidebar-block tag-block">
       <div class="sb-title">絞り込み</div>
       <div class="tag-group">
         <button class="tag-btn all active" onclick="filter('all',this)">
@@ -274,7 +300,7 @@ footer a { color: #c99a45; text-decoration: none; }
         <button class="tag-btn note" onclick="filter('業務連絡',this)">業務連絡 <span class="tag-count" id="c-業務連絡">0</span></button>
       </div>
     </div>
-    <div class="sidebar-block" style="font-size:0.74rem; color:#868e96; line-height:1.7;">
+    <div class="sidebar-block info-block" style="font-size:0.74rem; color:#868e96; line-height:1.7;">
       週1回程度更新しています。<br>
       研究・業績は<a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank" style="color:#1e3a5f;">公式サイト ↗</a>
     </div>
@@ -282,6 +308,7 @@ footer a { color: #c99a45; text-decoration: none; }
 
   <!-- 記事エリア -->
   <main class="articles-area">
+    <input type="search" class="search-box" id="search-box" placeholder="キーワードで検索（タイトル・本文）" oninput="search(this.value)">
     <div class="result-bar" id="result-bar">読み込み中...</div>
     <div id="article-list"></div>
     <div class="pagination" id="pagination"></div>
@@ -295,6 +322,7 @@ footer a { color: #c99a45; text-decoration: none; }
     <div class="modal-head">
       <div class="modal-meta" id="modal-meta"></div>
       <h2 class="modal-title" id="modal-title"></h2>
+      <button class="copy-link-btn" id="copy-link-btn" onclick="copyLink()">🔗 この記事のリンクをコピー</button>
     </div>
     <div class="modal-body" id="modal-body"></div>
     <button class="modal-close" onclick="closeModal()">✕ 閉じる</button>
@@ -381,6 +409,7 @@ let articles = [];
 const PER_PAGE = 5;
 let currentPage = 1;
 let currentTag = 'all';
+let currentQuery = '';
 
 async function load() {
   try {
@@ -405,15 +434,25 @@ function updateCounts() {
   tags.forEach(tag => {
     const el = document.getElementById('c-' + tag);
     if (!el) return;
-    el.textContent = tag === 'all'
+    const count = tag === 'all'
       ? articles.length
       : articles.filter(a => a.tags.includes(tag)).length;
+    el.textContent = count;
+    // 記事が0件のタグは隠す
+    if (tag !== 'all') el.closest('.tag-btn').hidden = count === 0;
+  });
+  // ボタンが全部隠れたグループは、見出しごと隠す
+  document.querySelectorAll('.tag-group').forEach(g => {
+    g.hidden = !g.querySelector('.tag-btn:not([hidden])');
   });
 }
 
 function filter(tag, btn) {
   document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  // 授業ページから0件のタグで来た場合も、選択中のタグは見えるようにする
+  btn.hidden = false;
+  btn.closest('.tag-group').hidden = false;
   currentPage = 1;
   currentTag = tag;
   render(tag);
@@ -429,8 +468,21 @@ function goToPage(page) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// 検索欄に入力されるたびに、1ページ目から表示し直す
+function search(q) {
+  currentQuery = q.trim().toLowerCase();
+  currentPage = 1;
+  render(currentTag);
+}
+
+function matchesQuery(a) {
+  if (!currentQuery) return true;
+  return (a.title + ' ' + plainText(a.body)).toLowerCase().includes(currentQuery);
+}
+
 function render(tag) {
-  const list = tag === 'all' ? articles : articles.filter(a => a.tags.includes(tag));
+  const list = (tag === 'all' ? articles : articles.filter(a => a.tags.includes(tag)))
+    .filter(matchesQuery);
   const totalPages = Math.ceil(list.length / PER_PAGE);
   if (currentPage > totalPages) currentPage = totalPages || 1;
   const start = (currentPage - 1) * PER_PAGE;
@@ -439,11 +491,16 @@ function render(tag) {
   const bar = document.getElementById('result-bar');
   const container = document.getElementById('article-list');
   const pagination = document.getElementById('pagination');
-  bar.innerHTML = tag === 'all'
+  const tagBadge = tag === 'all' ? '' : `<span class="result-tag-badge">#${tag}</span>`;
+  const queryBadge = currentQuery
+    ? `<span class="result-tag-badge">「${escapeHTML(currentQuery)}」</span>` : '';
+  bar.innerHTML = tag === 'all' && !currentQuery
     ? `全 <strong>${list.length}</strong> 件`
-    : `<span class="result-tag-badge">#${tag}</span> <strong>${list.length}</strong> 件`;
+    : `${tagBadge}${queryBadge} <strong>${list.length}</strong> 件`;
   if (list.length === 0) {
-    container.innerHTML = `<div class="empty-msg">このタグの記事はまだありません。</div>`;
+    container.innerHTML = currentQuery
+      ? `<div class="empty-msg">「${escapeHTML(currentQuery)}」に一致する記事は見つかりませんでした。</div>`
+      : `<div class="empty-msg">このタグの記事はまだありません。</div>`;
     pagination.innerHTML = '';
     return;
   }
@@ -482,7 +539,7 @@ function render(tag) {
     for (let i = 1; i <= totalPages; i++) {
       btns += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
     }
-    btns += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}">次 →</button>`;
+    btns += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>次 →</button>`;
     pagination.innerHTML = btns;
   }
 }
@@ -497,12 +554,37 @@ function openModal(id) {
     `<span class="modal-date">${a.date.replace(/-/g,'.')}</span>${tagsHTML}`;
   document.getElementById('modal-title').textContent = a.title;
   document.getElementById('modal-body').innerHTML = renderBody(a.body);
+  document.getElementById('copy-link-btn').textContent = '🔗 この記事のリンクをコピー';
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  // アドレス欄を column.html?id=記事ID にして、記事ごとのリンクを共有できるようにする
+  const url = new URL(window.location);
+  url.searchParams.set('id', id);
+  history.replaceState(null, '', url);
 }
 function closeModal() {
   document.getElementById('overlay').classList.remove('open');
   document.body.style.overflow = '';
+  const url = new URL(window.location);
+  if (url.searchParams.has('id')) {
+    url.searchParams.delete('id');
+    history.replaceState(null, '', url);
+  }
+}
+// 開いている記事だけを指すリンク（タグ等は含めない）をコピーする
+function copyLink() {
+  const url = new URL(window.location);
+  const link = `${url.origin}${url.pathname}?id=${url.searchParams.get('id')}`;
+  const btn = document.getElementById('copy-link-btn');
+  const done = () => { btn.textContent = '✓ コピーしました'; };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(done, () => prompt('このリンクをコピーしてください', link));
+  } else {
+    prompt('このリンクをコピーしてください', link);
+  }
+}
+function escapeHTML(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
 function closeIfBg(e) {
   if (e.target === document.getElementById('overlay')) closeModal();
@@ -510,11 +592,15 @@ function closeIfBg(e) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 function initFromURL() {
-  const tag = new URLSearchParams(window.location.search).get('tag');
+  const params = new URLSearchParams(window.location.search);
+  const tag = params.get('tag');
+  const id = params.get('id');
   if (tag) {
     const btn = document.querySelector(`[onclick="filter('${tag}',this)"]`);
     if (btn) filter(tag, btn);
   }
+  // column.html?id=記事ID で来たら、その記事を開く
+  if (id) openModal(id);
 }
 
 function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('open'); }
