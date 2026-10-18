@@ -147,6 +147,45 @@ header {
   font-family: 'Noto Sans JP', sans-serif; padding: 0; transition: color 0.15s;
 }
 .read-btn:hover { color: #b07d2a; }
+/* 表示切り替え（カード／リスト） */
+.view-toggle { margin-left: auto; display: flex; gap: 2px; flex-shrink: 0; }
+.view-btn {
+  padding: 2px 9px; border: 1px solid #dee2e6; border-radius: 3px;
+  background: #fff; color: #868e96; font-size: 0.68rem; cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.view-btn.active { background: #1e3a5f; border-color: #1e3a5f; color: #fff; }
+
+/* 月ごとの見出し */
+.month-head {
+  font-family: 'Noto Serif JP', serif; font-size: 0.82rem; color: #1e3a5f;
+  margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 2px solid #b07d2a;
+  display: inline-block;
+}
+.month-head:first-child { margin-top: 0; }
+
+/* リスト表示（タイトルだけを1行ずつ） */
+.article-list-box {
+  background: #fff; border: 1px solid #dee2e6; border-radius: 8px;
+  overflow: hidden; margin-bottom: 4px;
+}
+.list-row {
+  display: flex; align-items: baseline; gap: 12px; padding: 10px 14px;
+  border-bottom: 1px solid #f1f3f5; border-left: 4px solid #dee2e6;
+  cursor: pointer; transition: background 0.15s;
+}
+.list-row:last-child { border-bottom: none; }
+.list-row:hover { background: #f8f9fa; }
+.list-row.lec-card { border-left-color: #1864ab; }
+.list-row.sem-card { border-left-color: #087f5b; }
+.list-row.res-card { border-left-color: #6741d9; }
+.list-date { font-size: 0.7rem; color: #868e96; font-family: 'Source Sans 3', monospace; flex-shrink: 0; }
+.list-title {
+  font-family: 'Noto Serif JP', serif; font-size: 0.9rem; color: #1e3a5f;
+  line-height: 1.5; flex: 1; min-width: 0;
+}
+.list-tags { display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; }
+
 .empty-msg {
   text-align: center; padding: 48px 20px; color: #868e96;
   background: #fff; border: 1px solid #dee2e6; border-radius: 8px;
@@ -224,6 +263,9 @@ footer a { color: #c99a45; text-decoration: none; }
 
 /* ===== レスポンシブ ===== */
 @media (max-width: 680px) {
+  /* リスト表示：タグはタイトルの下に回す */
+  .list-row { flex-wrap: wrap; gap: 4px 10px; }
+  .list-tags { flex-basis: 100%; }
   .header-nav { display: none; }
   .hamburger { display: flex; }
   .page-wrap { grid-template-columns: 1fr; padding: 20px 14px 60px; }
@@ -406,10 +448,38 @@ function renderBody(text) {
 }
 
 let articles = [];
-const PER_PAGE = 5;
+// 1ページの件数：カード表示は5件、リスト表示は30件
+const PER_PAGE = { card: 5, list: 30 };
 let currentPage = 1;
 let currentTag = 'all';
 let currentQuery = '';
+// 表示方法は閲覧者のブラウザに覚えておく（保存できない環境ではカード表示）
+let currentView = 'card';
+try { if (localStorage.getItem('columnView') === 'list') currentView = 'list'; } catch(e) {}
+
+function setView(view) {
+  currentView = view;
+  try { localStorage.setItem('columnView', view); } catch(e) {}
+  currentPage = 1;
+  render(currentTag);
+}
+
+// '2026-09-26' → '2026年9月'
+function monthLabel(date) {
+  const [y, m] = date.split('-');
+  return `${y}年${Number(m)}月`;
+}
+
+// 記事の並びの中で月が変わるところに見出しを入れ、月ごとにまとめる
+function groupByMonth(list) {
+  const groups = [];
+  list.forEach(a => {
+    const label = monthLabel(a.date);
+    if (!groups.length || groups[groups.length - 1].label !== label) groups.push({ label, items: [] });
+    groups[groups.length - 1].items.push(a);
+  });
+  return groups;
+}
 
 async function load() {
   try {
@@ -483,10 +553,11 @@ function matchesQuery(a) {
 function render(tag) {
   const list = (tag === 'all' ? articles : articles.filter(a => a.tags.includes(tag)))
     .filter(matchesQuery);
-  const totalPages = Math.ceil(list.length / PER_PAGE);
+  const perPage = PER_PAGE[currentView];
+  const totalPages = Math.ceil(list.length / perPage);
   if (currentPage > totalPages) currentPage = totalPages || 1;
-  const start = (currentPage - 1) * PER_PAGE;
-  const pageList = list.slice(start, start + PER_PAGE);
+  const start = (currentPage - 1) * perPage;
+  const pageList = list.slice(start, start + perPage);
 
   const bar = document.getElementById('result-bar');
   const container = document.getElementById('article-list');
@@ -497,6 +568,11 @@ function render(tag) {
   bar.innerHTML = tag === 'all' && !currentQuery
     ? `全 <strong>${list.length}</strong> 件`
     : `${tagBadge}${queryBadge} <strong>${list.length}</strong> 件`;
+  bar.innerHTML += `
+    <span class="view-toggle">
+      <button class="view-btn ${currentView === 'card' ? 'active' : ''}" onclick="setView('card')">カード</button>
+      <button class="view-btn ${currentView === 'list' ? 'active' : ''}" onclick="setView('list')">リスト</button>
+    </span>`;
   if (list.length === 0) {
     container.innerHTML = currentQuery
       ? `<div class="empty-msg">「${escapeHTML(currentQuery)}」に一致する記事は見つかりませんでした。</div>`
@@ -504,30 +580,11 @@ function render(tag) {
     pagination.innerHTML = '';
     return;
   }
-  container.innerHTML = pageList.map(a => {
-    const tagsHTML = a.tags.map(t =>
-      `<span class="card-tag ct-${tt(t)}">${t}</span>`
-    ).join('');
-    const preview = plainText(a.body).slice(0, 100) + '…';
-    const thumbSrc = firstImage(a.body);
-    const thumbHTML = thumbSrc
-      ? `<img src="${thumbSrc}" alt="" class="card-thumb" loading="lazy" decoding="async">`
-      : '';
-    return `
-      <div class="article-card ${cardClass(a.tags)}" onclick="openModal('${a.id}')">
-        <div class="card-inner">
-          <div class="card-meta">
-            <span class="card-date">${a.date.replace(/-/g, '.')}</span>
-            ${tagsHTML}
-          </div>
-          <h2 class="card-title">${a.title}</h2>
-          ${thumbHTML}
-          <p class="card-preview">${preview}</p>
-        </div>
-        <div class="card-footer">
-          <button class="read-btn" onclick="openModal('${a.id}');event.stopPropagation();">続きを読む →</button>
-        </div>
-      </div>`;
+  const renderItem = currentView === 'list' ? listRowHTML : cardHTML;
+  container.innerHTML = groupByMonth(pageList).map(g => {
+    const items = g.items.map(renderItem).join('');
+    return `<div class="month-head">${g.label}</div>` +
+      (currentView === 'list' ? `<div class="article-list-box">${items}</div>` : items);
   }).join('');
 
   // Pagination
@@ -542,6 +599,46 @@ function render(tag) {
     btns += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>次 →</button>`;
     pagination.innerHTML = btns;
   }
+}
+
+// リスト表示の1行：日付・タイトル・タグだけ
+function listRowHTML(a) {
+  const tagsHTML = a.tags.map(t =>
+    `<span class="card-tag ct-${tt(t)}">${t}</span>`
+  ).join('');
+  return `
+    <div class="list-row ${cardClass(a.tags)}" onclick="openModal('${a.id}')">
+      <span class="list-date">${a.date.slice(5).replace('-', '.')}</span>
+      <span class="list-title">${a.title}</span>
+      <span class="list-tags">${tagsHTML}</span>
+    </div>`;
+}
+
+// カード表示の1件：写真と本文の抜粋つき
+function cardHTML(a) {
+  const tagsHTML = a.tags.map(t =>
+    `<span class="card-tag ct-${tt(t)}">${t}</span>`
+  ).join('');
+  const preview = plainText(a.body).slice(0, 100) + '…';
+  const thumbSrc = firstImage(a.body);
+  const thumbHTML = thumbSrc
+    ? `<img src="${thumbSrc}" alt="" class="card-thumb" loading="lazy" decoding="async">`
+    : '';
+  return `
+    <div class="article-card ${cardClass(a.tags)}" onclick="openModal('${a.id}')">
+      <div class="card-inner">
+        <div class="card-meta">
+          <span class="card-date">${a.date.replace(/-/g, '.')}</span>
+          ${tagsHTML}
+        </div>
+        <h2 class="card-title">${a.title}</h2>
+        ${thumbHTML}
+        <p class="card-preview">${preview}</p>
+      </div>
+      <div class="card-footer">
+        <button class="read-btn" onclick="openModal('${a.id}');event.stopPropagation();">続きを読む →</button>
+      </div>
+    </div>`;
 }
 
 function openModal(id) {
