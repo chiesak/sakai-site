@@ -376,6 +376,7 @@ footer a { color: #c99a45; text-decoration: none; }
 <footer>
   <p>酒井千絵研究室（関西大学社会学部）</p>
   <p><a href="https://wps.itc.kansai-u.ac.jp/chiesakai/" target="_blank">研究室公式サイト</a></p>
+  <p style="font-size:0.85em;opacity:0.8;margin-top:6px;">このサイトでは、Cookieを使わない方法（GoatCounter）でページの閲覧数を集計しています。個人を特定する情報は収集していません。</p>
 </footer>
 
 <script>
@@ -666,6 +667,11 @@ function openModal(id, push = true) {
     url.searchParams.set('id', id);
     history.pushState(null, '', url);
     pushedModal = true;
+    // 一覧から開いた記事の閲覧数を GoatCounter に記録する
+    // （リンクから直接来た場合は、通常のページ閲覧として ?id= つきで数えられる）
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: location.pathname + '?id=' + id, title: a.title });
+    }
   }
 }
 function hideModal() {
@@ -734,5 +740,7 @@ function closeMenu()  { document.getElementById('mobile-menu').classList.remove(
 
 load();
 </script>
+<!-- 閲覧数の集計（GoatCounter：Cookieなし・個人情報なし） -->
+<script data-goatcounter="https://sakai-site.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
