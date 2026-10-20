@@ -6,7 +6,8 @@ on:
 
 jobs:
   add-entry:
-    if: contains(github.event.issue.body, '### タグ') && !contains(github.event.issue.body, '### 記事ID')
+    # リポジトリの持ち主（先生本人）が書いたIssueだけを記事にする
+    if: github.event.issue.user.login == github.repository_owner && contains(github.event.issue.body, '### タグ') && !contains(github.event.issue.body, '### 記事ID')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -79,7 +80,8 @@ jobs:
             });
 
   edit-entry:
-    if: contains(github.event.issue.body, '### 記事ID')
+    # リポジトリの持ち主（先生本人）が書いたIssueだけで記事を修正する
+    if: github.event.issue.user.login == github.repository_owner && contains(github.event.issue.body, '### 記事ID')
     runs-on: ubuntu-latest
     permissions:
       contents: write

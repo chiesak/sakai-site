@@ -644,7 +644,10 @@ function cardHTML(a) {
     </div>`;
 }
 
-function openModal(id) {
+// 一覧から記事を開いたときは履歴を1つ積み、スマホの「戻る」で記事だけ閉じられるようにする
+let pushedModal = false;
+// push=false：URLがすでにその記事を指しているとき（リンクから直接来た・戻る/進むで来た）
+function openModal(id, push = true) {
   const a = articles.find(x => x.id === id);
   if (!a) return;
   const tagsHTML = a.tags.map(t =>
@@ -658,19 +661,42 @@ function openModal(id) {
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   // アドレス欄を column.html?id=記事ID にして、記事ごとのリンクを共有できるようにする
-  const url = new URL(window.location);
-  url.searchParams.set('id', id);
-  history.replaceState(null, '', url);
-}
-function closeModal() {
-  document.getElementById('overlay').classList.remove('open');
-  document.body.style.overflow = '';
-  const url = new URL(window.location);
-  if (url.searchParams.has('id')) {
-    url.searchParams.delete('id');
-    history.replaceState(null, '', url);
+  if (push) {
+    const url = new URL(window.location);
+    url.searchParams.set('id', id);
+    history.pushState(null, '', url);
+    pushedModal = true;
   }
 }
+function hideModal() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+// 「閉じる」ボタン・背景クリック・Escキーで閉じるとき
+function closeModal() {
+  if (!document.getElementById('overlay').classList.contains('open')) return;
+  hideModal();
+  if (pushedModal) {
+    // 開いたときに積んだ履歴を戻す（popstate で URL も元に戻る）
+    pushedModal = false;
+    history.back();
+    return;
+  }
+  const url = new URL(window.location);
+  url.searchParams.delete('id');
+  history.replaceState(null, '', url);
+}
+// ブラウザの「戻る」「進む」：URLに合わせて記事を開く・閉じる
+window.addEventListener('popstate', () => {
+  const id = new URLSearchParams(window.location.search).get('id');
+  if (id) {
+    openModal(id, false);
+    pushedModal = true;
+  } else {
+    hideModal();
+    pushedModal = false;
+  }
+});
 // 開いている記事だけを指すリンク（タグ等は含めない）をコピーする
 function copyLink() {
   const url = new URL(window.location);
@@ -700,7 +726,7 @@ function initFromURL() {
     if (btn) filter(tag, btn);
   }
   // column.html?id=記事ID で来たら、その記事を開く
-  if (id) openModal(id);
+  if (id) openModal(id, false);
 }
 
 function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('open'); }
