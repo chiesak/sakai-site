@@ -240,7 +240,7 @@ header {
 }
 .modal-body strong { font-weight: 700; }
 .modal-body em { font-style: italic; color: #495057; }
-.modal-body a { color: #1864ab; }
+.modal-body a { color: #1864ab; overflow-wrap: anywhere; }
 /* 本文中の写真：枠に必ず収める（GitHubが付けるwidth/height属性を打ち消す） */
 .modal-body img {
   max-width: 100%; width: auto; height: auto;
@@ -446,8 +446,26 @@ function renderBody(text) {
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
         .replace(/\n/g, '<br>');
-      return `<p>${line}</p>`;
+      return `<p>${autoLink(line)}</p>`;
     })
+    .join('');
+}
+
+/* 本文にそのまま書かれた https://… をリンクにする。
+   タグの中（画像のsrcなど）と、[文字](URL) で作ったリンクの中は変えない。
+   URLは空白・改行・「」（）、。などの手前で終わるものとし、
+   末尾の . , ) などの記号はURLに含めない。                        */
+function autoLink(html) {
+  return html
+    .split(/(<a\b[^>]*>[\s\S]*?<\/a>|<[^>]+>)/i)
+    .map((part, i) => i % 2 === 1 ? part : part.replace(
+      /https?:\/\/[^\s<>"'「」『』（）、。]+/g,
+      url => {
+        const tail = url.match(/[.,;:!?)\]]+$/);
+        const trail = tail ? tail[0] : '';
+        const href = trail ? url.slice(0, -trail.length) : url;
+        return `<a href="${href}" target="_blank" rel="noopener">${href}</a>${trail}`;
+      }))
     .join('');
 }
 
