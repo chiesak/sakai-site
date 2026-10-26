@@ -1,0 +1,128 @@
+name: Check column.json
+
+# data/column.json の書式が崩れていないかを自動でチェックする。
+# 崩れていると、コラムページが「データの読み込みに失敗しました」になってしまうため。
+# main で崩れていたら Issue を立てて知らせ、直ったらその Issue を自動で閉じる。
+on:
+  push:
+    paths:
+      - 'data/column.json'
+  pull_request:
+    paths:
+      - 'data/column.json'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check column.json
+        id: check
+        run: |
+          python3 - <<'EOF'
+          import json, re, sys
+
+          path = 'data/column.json'
+          text = open(path, encoding='utf-8').read()
+          problems = []
+
+          try:
+              data = json.loads(text)
+          except json.JSONDecodeError as e:
+              line = text.splitlines()[e.lineno - 1] if e.lineno <= len(text.splitlines()) else ''
+              start = max(0, e.colno - 60)
+              snippet = line[start:e.colno + 20]
+              problems.append(
+                  f'{e.lineno}行目・{e.colno}文字目のあたりで書式が崩れています（{e.msg}）。\n\n'
+                  f'問題の箇所の付近（↓のすぐ前後を確認してください）：\n\n'
+                  f'```\n{line[start:e.colno - 1]}↓{line[e.colno - 1:e.colno + 20]}\n```\n\n'
+                  'よくある原因：本文を囲む " の外に文字を書いた／" や改行をそのまま本文に入れた／'
+                  '記事と記事の間の , が抜けた・多すぎる。'
+              )
+              data = None
+
+          if data is not None:
+              if not isinstance(data, list):
+                  problems.append('ファイル全体が [ ] で囲まれていません。')
+              else:
+                  seen = set()
+                  for i, a in enumerate(data, 1):
+                      label = f'{i}番目の記事（id: {a.get("id", "なし")}）' if isinstance(a, dict) else f'{i}番目の記事'
+                      if not isinstance(a, dict):
+                          problems.append(f'{label}が {{ }} で囲まれていません。')
+                          continue
+                      for key in ['id', 'date', 'title', 'tags', 'body']:
+                          if key not in a:
+                              problems.append(f'{label}に "{key}" がありません。')
+                      if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(a.get('date', ''))):
+                          problems.append(f'{label}の "date" が「2026-10-26」の形になっていません。')
+                      if not isinstance(a.get('tags', []), list):
+                          problems.append(f'{label}の "tags" が [ ] で囲まれていません。')
+                      if a.get('id') in seen:
+                          problems.append(f'{label}の id が、ほかの記事と重複しています。')
+                      seen.add(a.get('id'))
+
+          if problems:
+              # 書式の崩れ（JSONとして読めない）はそのまま、それ以外は箇条書きにする
+              msg = problems[0] if data is None else '\n'.join('- ' + p for p in problems)
+              open('problems.md', 'w', encoding='utf-8').write(msg)
+              print(msg)
+              sys.exit(1)
+          print(f'OK：{len(data)}件の記事を正しく読み込めました。')
+          EOF
+
+      # main で崩れていたら Issue で知らせる（同じ知らせが開いていればコメントを追加）
+      - name: Report problem
+        if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const problems = fs.existsSync('problems.md') ? fs.readFileSync('problems.md', 'utf8') : '（詳細はActionsのログを見てください）';
+            const title = '⚠️ column.json の書式が崩れています（コラムが表示されません）';
+            const body = [
+              'コミット ' + context.sha.slice(0, 7) + ' で `data/column.json` の書式が崩れ、コラムページが「データの読み込みに失敗しました」になっています。',
+              '',
+              problems,
+              '',
+              '[column.json を開いて直す](https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/edit/main/data/column.json)',
+              '',
+              '直して保存すると、この Issue は自動で閉じます。',
+            ].join('\n');
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', creator: 'github-actions[bot]',
+            });
+            const existing = open.find(i => i.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo, title, body,
+              });
+            }
+
+      # 直ったら、開いている知らせの Issue を閉じる
+      - name: Close resolved report
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '⚠️ column.json の書式が崩れています（コラムが表示されません）';
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', creator: 'github-actions[bot]',
+            });
+            for (const i of open.filter(i => i.title === title)) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: i.number,
+                body: '✅ column.json の書式が直りました（コミット ' + context.sha.slice(0, 7) + '）。',
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: i.number, state: 'closed',
+              });
+            }

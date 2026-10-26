@@ -243,6 +243,14 @@ header {
   font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s;
 }
 .copy-link-btn:hover { background: #e9ecef; }
+/* 先生用の修正ツール（column.html?edit で表示） */
+.edit-tools {
+  margin-top: 10px; padding: 8px 10px; border: 1px dashed #b07d2a; border-radius: 4px;
+  background: #fffaf0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  font-size: 0.7rem; color: #855a00;
+}
+.edit-tools .copy-link-btn { margin-top: 0; text-decoration: none; display: inline-block; }
+.edit-tools code { font-family: 'Source Sans 3', monospace; font-size: 0.8rem; color: #2c2c2c; }
 .modal-body { padding: 20px 28px 28px; font-size: 0.88rem; line-height: 2; color: #333; }
 .modal-body p { margin-bottom: 1em; }
 .modal-body p:last-child { margin-bottom: 0; }
@@ -379,6 +387,11 @@ footer a { color: #c99a45; text-decoration: none; }
       <div class="modal-meta" id="modal-meta"></div>
       <h2 class="modal-title" id="modal-title"></h2>
       <button class="copy-link-btn" id="copy-link-btn" onclick="copyLink()">🔗 この記事のリンクをコピー</button>
+      <div class="edit-tools" id="edit-tools" hidden>
+        <span>記事ID：<code id="edit-id"></code></span>
+        <button class="copy-link-btn" id="copy-body-btn" onclick="copyBody()">📋 修正用に本文をコピー</button>
+        <a class="copy-link-btn" id="edit-form-link" target="_blank" rel="noopener">✏️ 修正フォームを開く</a>
+      </div>
     </div>
     <div class="modal-body" id="modal-body"></div>
     <button class="modal-close" onclick="closeModal()">✕ 閉じる</button>
@@ -689,6 +702,7 @@ function openModal(id, push = true) {
   document.getElementById('modal-title').textContent = a.title;
   document.getElementById('modal-body').innerHTML = renderBody(a.body);
   document.getElementById('copy-link-btn').textContent = '🔗 この記事のリンクをコピー';
+  setupEditTools(a);
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   // アドレス欄を column.html?id=記事ID にして、記事ごとのリンクを共有できるようにする
@@ -745,6 +759,65 @@ function copyLink() {
     prompt('このリンクをコピーしてください', link);
   }
 }
+/* 先生用の修正ツール ------------------------------------------------
+   column.html?edit を一度開くと、そのブラウザでは記事の窓に
+   「修正用に本文をコピー」「修正フォームを開く」が出るようになる。
+   column.html?edit=off で元に戻る。学生には表示されない。          */
+let editMode = false;
+try { editMode = localStorage.getItem('columnEdit') === 'on'; } catch(e) {}
+function initEditMode() {
+  const url = new URL(window.location);
+  if (!url.searchParams.has('edit')) return;
+  editMode = url.searchParams.get('edit') !== 'off';
+  try { editMode ? localStorage.setItem('columnEdit', 'on') : localStorage.removeItem('columnEdit'); } catch(e) {}
+  // アドレス欄からは edit を消しておく（記事のリンクに混ざらないように）
+  url.searchParams.delete('edit');
+  history.replaceState(null, '', url);
+}
+initEditMode();
+
+function setupEditTools(a) {
+  const box = document.getElementById('edit-tools');
+  box.hidden = !editMode;
+  if (!editMode) return;
+  document.getElementById('edit-id').textContent = a.id;
+  document.getElementById('copy-body-btn').textContent = '📋 修正用に本文をコピー';
+  // 修正フォーム（Issue）を、記事IDと題名を入れた状態で開く。
+  // 本文が短ければ本文も入れておく（長すぎるとGitHubが開けないため）
+  const form = new URL('https://github.com/chiesak/sakai-site/issues/new');
+  form.searchParams.set('template', 'edit-column.yml');
+  form.searchParams.set('title', `記事修正：${a.title}`);
+  form.searchParams.set('entry-id', a.id);
+  const withBody = new URL(form);
+  withBody.searchParams.set('new-body', a.body);
+  const link = document.getElementById('edit-form-link');
+  if (withBody.href.length < 6000) {
+    link.href = withBody.href;
+    link.textContent = '✏️ 修正フォームを開く（本文入力済み）';
+  } else {
+    link.href = form.href;
+    link.textContent = '✏️ 修正フォームを開く（本文は貼り付け）';
+  }
+}
+
+// 画像やリンクの書き方も含めた、元の本文をそのままコピーする
+function copyBody() {
+  const a = articles.find(x => x.id === new URLSearchParams(window.location.search).get('id'));
+  if (!a) return;
+  const btn = document.getElementById('copy-body-btn');
+  const done = () => { btn.textContent = '✓ 本文をコピーしました'; };
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = a.body;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch(e) {}
+    ta.remove();
+  };
+  if (navigator.clipboard) navigator.clipboard.writeText(a.body).then(done, fallback);
+  else fallback();
+}
+
 function escapeHTML(s) {
   return s.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
