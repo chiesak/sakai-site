@@ -20,6 +20,7 @@ body:
         - 最近読んだ本
         - 学会・調査
         - 業務連絡
+        - 雑談
     validations:
       required: true
   - type: textarea
